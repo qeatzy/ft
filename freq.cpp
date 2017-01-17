@@ -1,8 +1,8 @@
 #include "utility.h"
-#include "ft_utility.h"
+#include "ft_utility.h"     // PI, M_PI
 #include <cfloat>
 
-namespace ft {
+// namespace ft {
     struct DistValues { // value aggregate for describe distribution characteristic of sample
     public:
         double mean;
@@ -39,8 +39,8 @@ namespace ft {
         res.std = std::sqrt(res.std);
         return res;
     }
-}
-    using namespace ft;
+// }
+//     using namespace ft;
 
 struct posi_prob {
 	double x;
