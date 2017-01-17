@@ -20,3 +20,4 @@ Makefile : ;
 .PHONY: clean
 clean:
 	rm -rf $(OBJDIR)
+	rm -rf *.exe.stackdump

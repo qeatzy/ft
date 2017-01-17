@@ -1,3 +1,5 @@
-/_*/
+/_test/
 *.pyc
 /tmp*
+*.exe.stackdump
+*.stackdump
