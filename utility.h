@@ -44,7 +44,25 @@ using std::array;
     // auto start = std::chrono::high_resolution_clock::now();
     // auto end = std::chrono::high_resolution_clock::now();
     // std::chrono::duration<double> diff = end-start;
-    // std::cout << diff.count() << " s\n";
+    // std::cout << diff.count() << " sec\n";
+
+class Timer {
+public:
+    Timer(): m_time{std::chrono::steady_clock::now()} {}
+    void reset() { m_time = std::chrono::steady_clock::now(); }
+    void clear() { reset(); }
+    void show() {
+        auto diff = timeit();
+        std::cout << diff.count() << " sec\n";
+    }
+private:
+    std::chrono::duration<double> timeit() {
+        auto old_time = m_time;
+        reset();
+        return m_time - old_time;
+    }
+    decltype(std::chrono::steady_clock::now()) m_time;
+};
 
 void wait() {
     char c; cin.get(c); if (c=='q') exit(1);
