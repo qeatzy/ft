@@ -18,16 +18,13 @@ namespace ft {
     template <typename ForwardIt>
     DistValues describe(ForwardIt first, ForwardIt last) {
         DistValues res;
-        res.mean = 0, res.min = DBL_MIN, res.max = DBL_MAX, res.std = 0;
+        res.mean = 0, res.min = DBL_MAX, res.max = DBL_MIN, res.std = 0;
         res.cnt = std::distance(first, last);
         // print(first, last);
         for (auto it = first; it != last; ++it) {
             res.mean += *it;
-            if (*it < res.min) {
-                res.min = *it;
-            } else {
-                res.max = *it;
-            }
+            if (*it < res.min) { res.min = *it; }
+            if (*it > res.max) { res.max = *it; }
         }
         res.mean /= res.cnt;
         for (auto it = first; it != last; ++it) {
