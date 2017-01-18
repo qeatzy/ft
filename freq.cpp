@@ -57,9 +57,14 @@ posi_prob operator-(const posi_prob& lhs, const posi_prob& rhs) {
 }
 
 
-double Normal(double x) //概率密度函数
+inline double Normal(double x) //概率密度函数
 {
 	return (1.0 / (sqrt(2.0*PI)))* exp(-1.0*pow(x, 2) / 2.0);
+}
+
+inline double Normal_refactored(double x) //概率密度函数
+{
+	return (1.0 / (sqrt(2.0*PI)))* exp(-0.5 * x * x);
 }
 
 vector<posi_prob> KDE(vector<double> &residual, double m_min, double m_max, int num, double average, double sigma, int INTERVAL) {
@@ -90,7 +95,7 @@ vector<posi_prob> KDE_refactored(vector<double> &data, int INTERVAL) {
 		temp.x = d.min + i*stemp+0.5*stemp;
 		temp.y = 0;
 		for (auto value: data) {
-			temp.y += Normal((temp.x - value) / h);
+			temp.y += Normal_refactored((temp.x - value) / h);
 		}
 		temp.y /= (d.cnt * h);
 		pdf.push_back(temp);
@@ -101,19 +106,22 @@ vector<posi_prob> KDE_refactored(vector<double> &data, int INTERVAL) {
 namespace test {
     // using namespace ft;
     void KDE() {
-        const int INTERVAL = 100000;
+        const int INTERVAL = 1000;
         std::vector<double> seq;
-        for (auto i: range(200))
+        for (auto i: range(5000))
             seq.push_back(i);
-        auto res = ::KDE_refactored(seq, INTERVAL);
         auto d = describe(seq.begin(), seq.end());
+        Timer timer;
+        auto res = ::KDE_refactored(seq, INTERVAL);
+        timer.show();
         auto res_old = ::KDE(seq, d.min, d.max, d.cnt, d.mean, d.std, INTERVAL);
+        timer.show();
         cout << res.size() << ", " << res_old.size() << endl;
         for (size_t i = 0; i < res.size(); ++i) {
             if (res[i] == res_old[i]) continue;
             // cout << "i = " << i << ", res[i] = " << res[i] << ", res_old[i] = " << res_old[i] << endl;
-            if (true) {
-            // if (i < 20 || i % 500 == 0) {
+            // if (true) {
+            if (i < 20 || i % 500 == 0) {
                 cout << "i = " << i << ", diff = " << res[i] - res_old[i] << endl;
                 wait();
             }
