@@ -18,16 +18,13 @@
     template <typename ForwardIt>
     DistValues describe(ForwardIt first, ForwardIt last) {
         DistValues res;
-        res.mean = 0, res.min = DBL_MIN, res.max = DBL_MAX, res.std = 0;
+        res.mean = 0, res.min = DBL_MAX, res.max = DBL_MIN, res.std = 0;
         res.cnt = std::distance(first, last);
         // print(first, last);
         for (auto it = first; it != last; ++it) {
             res.mean += *it;
-            if (*it < res.min) {
-                res.min = *it;
-            } else {
-                res.max = *it;
-            }
+            if (*it < res.min) { res.min = *it; }
+            if (*it > res.max) { res.max = *it; }
         }
         res.mean /= res.cnt;
         for (auto it = first; it != last; ++it) {
@@ -51,6 +48,12 @@ std::ostream& operator<<(std::ostream& os, const posi_prob& x) {
 }
 bool operator==(const posi_prob& lhs, const posi_prob& rhs) {
     return lhs.x == rhs.x && lhs.y == rhs.y;
+}
+posi_prob operator-(const posi_prob& lhs, const posi_prob& rhs) {
+    posi_prob res;
+    res.x = lhs.x - rhs.x;
+    res.y = lhs.y - rhs.y;
+    return res;
 }
 
 
@@ -76,11 +79,11 @@ vector<posi_prob> KDE(vector<double> &residual, double m_min, double m_max, int 
 	return pdf;
 }
 
-
 vector<posi_prob> KDE_refactored(vector<double> &data, int INTERVAL) {
     auto d = describe(data.begin(), data.end());
 	vector<posi_prob> pdf;
-	double stemp = (d.max - d.min) / INTERVAL;
+    pdf.reserve(INTERVAL);
+	const double stemp = (d.max - d.min) / INTERVAL;
 	double h = pow(4.0 / (3.0 * d.cnt), 1.0 / 5.0) * d.std;//高斯核的带宽
 	for (int i = 0; i < INTERVAL; ++i) {
 		posi_prob temp;
@@ -98,13 +101,23 @@ vector<posi_prob> KDE_refactored(vector<double> &data, int INTERVAL) {
 namespace test {
     // using namespace ft;
     void KDE() {
-        const int INTERVAL = 100;
+        const int INTERVAL = 100000;
         std::vector<double> seq;
         for (auto i: range(200))
             seq.push_back(i);
         auto res = ::KDE_refactored(seq, INTERVAL);
         auto d = describe(seq.begin(), seq.end());
         auto res_old = ::KDE(seq, d.min, d.max, d.cnt, d.mean, d.std, INTERVAL);
+        cout << res.size() << ", " << res_old.size() << endl;
+        for (size_t i = 0; i < res.size(); ++i) {
+            if (res[i] == res_old[i]) continue;
+            // cout << "i = " << i << ", res[i] = " << res[i] << ", res_old[i] = " << res_old[i] << endl;
+            if (true) {
+            // if (i < 20 || i % 500 == 0) {
+                cout << "i = " << i << ", diff = " << res[i] - res_old[i] << endl;
+                wait();
+            }
+        }
         cout << (res == res_old ? "equal" : "not equal");
         // print(res,"KDE_refactored",'\n');
         // print(res_old,"KDE",'\n');
